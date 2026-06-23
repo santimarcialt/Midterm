@@ -1,0 +1,566 @@
+================================================================
+   EXAMEN DE MEDIO TÉRMINO — PROGRAMACIÓN AVANZADA EN C++
+   Universidad San Francisco de Quito — USFQ
+
+   "El software y las catedrales son casi lo mismo:
+    primero las construimos, luego rezamos."
+
+   Nombre: _________________________________________Santiago Marcial
+   Fecha:  _________________________________________23/06/2026
+   Nota:   _______ / 100
+
+   Instrucciones:
+   - Duración: 60 minutos
+   - Puedes usar el IDE para la Sección C únicamente
+   - Las secciones A y B son SIN computadora — papel y lápiz
+   - En preguntas de código: la sintaxis debe ser C++ válido
+   - Justifica tus respuestas conceptuales — una respuesta
+     sin explicación recibe puntaje parcial
+
+   Distribución de tiempo recomendada:
+   - Sección A (30 pts):  12–15 minutos  → no más de 15
+   - Sección B (25 pts):  15–18 minutos  → no más de 18
+   - Sección C (45 pts):  25–30 minutos  → es la sección
+     que más puntos vale, no la dejes para el final
+   - Puntos extra:        solo si terminas antes de los 60 min
+
+   CONSEJO: si llegas a los 25 minutos y aún estás en A o B,
+   pasa a C de inmediato — vale casi la mitad del examen.
+================================================================
+
+
+╔══════════════════════════════════════════════════════════════╗
+║  SECCIÓN A — TEORÍA CONCEPTUAL            (SIN IDE) 30 pts ║
+╚══════════════════════════════════════════════════════════════╝
+
+────────────────────────────────────────────────────────────────
+A1. (2 pts) ¿En qué momento determina C++ el tipo de una
+variable, y qué ventaja concreta da eso al programador?
+
+  Al inicio de su declaracion (Tipado estatico) y el tipo de la variable puede ser local (Limitada por bloques de llaves, reservada en el stack, almacenamiento temporal con un costo de memoria menor) 
+  y global (fuera del programa, reservada en el heap y usada para uso generalizado o robustez de datos). Tambien se incluyen las variables de heap (new tipo) cuyo uso permite reservar espacio de un dato de espacio desconocido o considerable.)
+────────────────────────────────────────────────────────────────
+A2. (6 pts) Una función en C++ puede recibir sus argumentos
+de tres formas distintas.
+Nombra cada forma con su término técnico en C++, explica
+qué ocurre con el argumento original en cada caso, y da
+un ejemplo de situación real donde usarías cada una.
+
+  Primera forma — nombre técnico: Pasopor valor> Se crea una copia del argumento original. Para datos cortos como int, double
+  Segunda forma — nombre técnico: _Paso por referencia> Se usa la dirección con ampersan para trabajar con el valor original. Datos tipo vector o string para ahorrar memoria.
+
+  Tercera forma — nombre técnico: Paso por dirección: Se usa un puntero como argumento para acceder y modificar el elemento por desreferenciación. Modificar los valores de un array local desde arr (&arr [0])
+────────────────────────────────────────────────────────────────
+A3. (4 pts) En C++, el símbolo * tiene más de un significado
+según el contexto en que aparece. Lo mismo ocurre con &.
+Enfócate en los usos relacionados con punteros y referencias
+— no en los operadores aritméticos.
+
+  Explica los usos de * relacionados con punteros,
+  con un ejemplo de una línea para cada uno:
+                          x=10
+  Declaracion de puntero int*p=&x; 
+Desreferenciacion cout<<*p; //10 
+Modificacion de valor<<*p=20;
+
+  Explica los usos de & relacionados con punteros y referencias,
+  con un ejemplo de una línea para cada uno:
+
+  Paso por referencia void cambiar(int& x) {
+                           x=20} 
+                      cout<<x; //20 
+  Direccion de memoria &x=0x100
+
+────────────────────────────────────────────────────────────────
+A4. (6 pts) Completa la tabla con el valor de cada expresión
+después de ejecutar este bloque. Trabaja A MANO — no uses IDE.
+
+  int x = 8;
+  int* p = &x;
+  int** pp = &p;
+
+  ┌──────────────────────────┬─────────────────────────────┐
+  │ Expresión                │ Valor / resultado           │
+  ├──────────────────────────┼─────────────────────────────┤
+  │ x                        │   8                          │
+  │ *p                       │   8                          │
+  │ **pp                     │   8                          │
+  │ &x == p                  │   1 (True)                │
+  │ *p = 20; → valor de x    │   20                          │
+  │ **pp después de *p = 20  │   20                          │
+  └──────────────────────────┴─────────────────────────────┘
+
+────────────────────────────────────────────────────────────────
+A5. (4 pts) Después de liberar memoria con delete, un
+programador experimentado siempre escribe una línea más.
+¿Cuál es esa línea? ¿Por qué es necesaria? ¿Qué problema
+evita concretamente?
+
+  La línea: p=nullptr
+
+  Por qué:
+  Porque la direccion no apunta a un objeto real, asi que se le debe dar una nueva direccion nula para que no genere valores aleatorios o error.
+
+  Qué problema evita:
+  Puntero colgante o memory leak si se omite delete.
+
+A6. (8 pts) Lee el siguiente código. NO lo ejecutes —
+razona en papel.
+
+  #include <iostream>
+  using namespace std;
+
+  class Caja {
+  private:
+      int* datos;
+      int n;
+  public:
+      Caja(int tam) : n(tam) {
+          datos = new int[n];
+          for (int i = 0; i < n; i++)
+              datos[i] = i * 10;
+      }
+
+      ~Caja() {
+          delete[] datos;
+          datos = nullptr;
+      }
+
+      int obtener(int i) const {
+          return datos[i];
+      }
+  };
+
+  int main() {
+      Caja c1(3);
+      Caja* c2 = new Caja(2);
+
+      cout << c1.obtener(0) << endl;   // línea 1
+      cout << c2->obtener(1) << endl;  // línea 2
+
+      delete c2;
+      c2 = nullptr;
+
+      return 0;
+  }
+
+  a) (3 pts) Escribe la salida EXACTA del programa.
+     0
+     10
+
+  b) (2 pts) ¿Qué ocurre en memoria cuando se ejecuta
+     delete c2? Sé específico — ¿qué se destruye y en qué
+     orden?
+     Se destruye el contenido del puntero tipo Caja c2, el cual al tener un array de 2 elementos 0 y 10 los destruye en dicho orden
+
+  c) (3 pts) Si en lugar de delete c2 escribieras
+     c2 = nullptr sin hacer delete primero, ¿qué problema
+     ocurriría? ¿Cómo se llama ese problema?
+     Si bien no afecta al contenido del objeto y su direccion, no se limpia el heap, consumiendo espacio y produciendo Memory leak.
+
+
+╔══════════════════════════════════════════════════════════════╗
+║  SECCIÓN B — ANÁLISIS DE CÓDIGO           (SIN IDE) 25 pts ║
+╚══════════════════════════════════════════════════════════════╝
+
+────────────────────────────────────────────────────────────────
+B1. (10 pts) El siguiente código COMPILA sin errores pero
+produce un resultado incorrecto o tiene un problema grave
+en ejecución. Identifica QUÉ está mal, POR QUÉ ocurre,
+y cómo corregirlo.
+
+  PISTA: no busques errores de sintaxis — el compilador
+  no encontró ninguno. Busca errores de lógica o de diseño.
+
+  #include <iostream>
+  using namespace std;
+
+  class Contador {
+  private:
+      int valor;
+  public:
+      Contador(int v) : valor(v) {}
+
+      int getValor() { return valor; }
+
+      void setValor(int nuevo) {
+          valor = nuevo;
+      }
+  };
+
+  void incrementar(Contador c) {
+      c.setValor(c.getValor() + 1);
+  }
+
+  int main() {
+      Contador cnt(0);
+      incrementar(cnt);
+      incrementar(cnt);
+      incrementar(cnt);
+      cout << cnt.getValor() << endl;
+      return 0;
+  }
+
+  ¿Qué imprime realmente? 0
+
+  El programador esperaba que imprimiera 3. ¿Por qué imprime
+  eso en cambio? Explica el mecanismo exacto.
+  Porque el getter se definio antes del setter, y segun el orden logico el valor que retorna es el orifinal,0.
+
+  ¿Cómo lo corriges? Escribe la firma corregida de la función: 
+class Contador {
+  private:
+      int valor;
+  public:
+      Contador(int v) : valor(v) {}
+
+      void setValor(int nuevo) {
+          valor = nuevo;
+      } 
+
+      int getValor() { return valor; }
+  };
+  
+B2. (8 pts) El siguiente código también compila. Sin
+ejecutarlo, responde:
+
+  class Animal {
+  protected:
+      string nombre;
+  public:
+      Animal(string n) : nombre(n) {}
+      void hablar() {
+          cout << nombre << " hace un sonido." << endl;
+      }
+  };
+
+  class Perro : public Animal {
+  public:
+      Perro(string n) : Animal(n) {}
+      void hablar() {
+          cout << nombre << " dice: Guau!" << endl;
+      }
+  };
+
+  int main() {
+      Animal* a = new Perro("Rex");
+      a->hablar();
+      delete a;
+      return 0;
+  }
+
+  a) (3 pts) ¿Qué imprime a->hablar()? ¿Por qué imprime
+     ESO y no la versión de Perro?
+     Perro hace un sonido, porque no hay buena sobreescritura de clases
+
+  b) (3 pts) ¿Qué cambio de UNA PALABRA en la clase Animal
+     haría que imprimiera la versión de Perro? Explica el
+     mecanismo que activa ese cambio.
+     virtual para sobreescritura
+  c) (2 pts) ¿Hay algún problema con el delete a? ¿Por qué?
+     no porque es un puntero this
+
+────────────────────────────────────────────────────────────────
+B3. (7 pts) Escribe qué imprime cada fragmento SIN usar IDE.
+Si el fragmento tiene comportamiento indefinido, escríbelo
+y explica por qué.
+
+  Fragmento 1:
+    int arr[] = {5, 10, 15, 20};
+    int* p = arr;
+    p++;
+    cout << *p << endl;
+    cout << *(p + 1) << endl;
+  Imprime: 10
+           15
+
+  Fragmento 2:
+    int* p = new int(3);
+    delete p;
+    p = nullptr;
+    cout << *p << endl;
+  Imprime / ocurre: Un valor aleatorio o un error sistematico.
+  Por qué: Porque p ahora representa una direcci[on vac[ia o nula sin objeto real (nullptr)
+
+  Fragmento 3:
+    int buscar(int a, int b)   { return a + b; }
+    int buscar(int a, int b, int c) { return a + b + c; }
+    cout << buscar(2, 3) << endl;
+    cout << buscar(1, 2, 3) << endl;
+  Imprime: 2
+           6
+
+
+╔══════════════════════════════════════════════════════════════╗
+║  SECCIÓN C — CÓDIGO CON IDE               (CON IDE) 45 pts ║
+╚══════════════════════════════════════════════════════════════╝
+
+  Puedes usar el IDE para escribir, compilar y verificar.
+  Entrega: sube tu archivo .cpp al aula virtual al finalizar.
+  El código debe compilar sin errores — código que no
+  compila recibe 0 en esta sección.
+
+────────────────────────────────────────────────────────────────
+C1. (45 pts) IMPLEMENTACIÓN DESDE CERO
+
+Implementa un sistema de registro de temperaturas diarias.
+El usuario decide en tiempo de ejecución cuántos días
+registrar. El sistema gestiona la memoria manualmente.
+
+─── LO QUE DEBES IMPLEMENTAR ────────────────────────────────
+
+  1. CLASE RegistroTemperaturas
+     Atributos privados:
+       double* lecturas   (arreglo dinámico en heap)
+       int     capacidad  (cuántos días puede almacenar)
+       int     cantidad   (cuántos días se han registrado)
+
+     Constructor(int cap):
+       Usa lista de inicialización para capacidad y cantidad.
+       Reserva el arreglo dinámico con new en el cuerpo.
+
+     Destructor:
+       Libera el arreglo con delete[].
+       Pone lecturas en nullptr.
+
+     void agregar(double temp):
+       Si hay espacio: agrega temp al final.
+       Si no hay espacio: imprime "Registro lleno."
+       Valida que temp esté entre -50.0 y 60.0 —
+       si no está en rango imprime "Temperatura invalida."
+       y no agrega.
+
+     double promedio() const:
+       Retorna el promedio de las temperaturas registradas.
+       Si cantidad == 0 retorna 0.0.
+
+     double maxima() const:
+       Retorna la temperatura más alta registrada.
+
+     double minima() const:
+       Retorna la temperatura más baja registrada.
+
+     void imprimir() const:
+       Imprime cada temperatura con 1 decimal, separadas
+       por espacio, seguidas de un salto de línea.
+       NOTA: usa setprecision(1) dentro de imprimir().
+
+  2. FUNCIÓN LIBRE (fuera de la clase):
+     void resumen(const RegistroTemperaturas& reg)
+       Imprime el reporte final con el formato de la
+       salida esperada mostrada abajo.
+       Recibe el objeto por REFERENCIA CONSTANTE —
+       no por copia, no por puntero.
+       NOTA: promedio, maxima y minima se imprimen con
+       2 decimales (setprecision(2)) dentro de resumen().
+
+  3. MAIN:
+     - Lee n del teclado (capacidad del registro)
+     - Crea un objeto RegistroTemperaturas en el STACK
+     - Lee n temperaturas del teclado una por una
+     - Llama a resumen() al final
+     - Crea el objeto en el STACK — el destructor se
+       llama automáticamente al salir de scope de main
+       y libera el arreglo interno del heap
+
+─── ENTRADA Y SALIDA ESPERADA ───────────────────────────────
+
+  Entrada de prueba 1:
+    5
+    22.5  18.0  35.0  -5.0  28.3
+
+  Salida esperada 1:
+    Temperaturas: 22.5 18.0 35.0 -5.0 28.3
+    Promedio : 19.76
+    Maxima   : 35.00
+    Minima   : -5.00
+
+  Entrada de prueba 2 (con valores inválidos y registro lleno):
+    3
+    100.0  22.0  18.5  30.0  15.0
+
+  Salida esperada 2:
+    Temperatura invalida.
+    Registro lleno.
+    Registro lleno.
+    Temperaturas: 22.0 18.5 30.0
+    Promedio : 23.50
+    Maxima   : 30.00
+    Minima   : 18.50
+
+─── CRITERIOS DE EVALUACIÓN ────────────────────────────────
+
+  [ ] (5 pts)  Constructor correcto con new y lista de init
+  [ ] (5 pts)  Destructor correcto con delete[] y nullptr
+  [ ] (5 pts)  agregar() con validación de rango y capacidad
+  [ ] (5 pts)  promedio(), maxima(), minima() correctos (const)
+  [ ] (5 pts)  imprimir() correcto (const)
+  [ ] (8 pts)  resumen() recibe por referencia constante
+               e imprime con formato correcto
+  [ ] (7 pts)  main correcto: objeto en stack, lectura,
+               llamada a resumen, memoria liberada por scope
+  [ ] (5 pts)  El programa compila y reproduce ambas salidas
+
+  Escribe tu código aquí:
+
+
+────────────────────────────────────────────────────────────────
+  ★ FIN SECCIÓN C — Si deseas continúa con el Punto Extra ★
+────────────────────────────────────────────────────────────────
+
+════════════════════════════════════════════════════════════════
+  PUNTO EXTRA — SOBRECARGA Y ERRORES DE COMPILACIÓN  (+10 pts)
+════════════════════════════════════════════════════════════════
+
+  Opcional. Puedes hacer una o ambas — los puntos se
+  acumulan. Máximo posible: 100/100. Solo aplica si tu
+  nota base supera 60/100.
+
+────────────────────────────────────────────────────────────────
+PE. (+10 pts)
+
+Un estudiante quiere que su clase Calculadora tenga dos
+versiones de calcularArea():
+  - Una que recibe el lado de un cuadrado
+  - Una que recibe la base y la altura de un rectángulo
+
+Escribe este código y lo sube convencido de que funciona:
+
+  class Calculadora {
+  public:
+      double calcularArea(double lado) {
+          return lado * lado;
+      }
+      double calcularArea(double lado) {
+          return lado * 2;
+      }
+  };
+
+El compilador rechaza el código. El estudiante no entiende
+por qué — dice: "las dos funciones hacen cosas distintas,
+¿por qué el compilador no las distingue?"
+
+  a) (3 pts) Explica exactamente por qué el compilador
+     no puede distinguir estas dos funciones.
+     No basta decir "tienen el mismo nombre" — explica
+     el mecanismo técnico que usa el compilador para
+     distinguir funciones sobrecargadas y por qué ese
+     mecanismo falla aquí.
+     Ademas de que no existe una declaracion de atributos y un constructor (sintaxis) que establezcan distinciones, el nombre es identico, el tipo es identico y el tipo y tamano para los parametros es el mismo, por lo que no hay una distincion entre las funciones bajo el concepto de sobrecarga.
+  b) (3 pts) El estudiante quería implementar lo que
+     describió: área de cuadrado y área de rectángulo.
+     Escribe la versión CORRECTA de la clase que logra
+     exactamente eso usando sobrecarga válida.
+
+     class Calculadora {
+     public: 
+     public:
+      double calcularArea(double lado) {
+          return lado * lado;
+      }
+      double calcularArea(double lado) {
+          return lado * 2;
+      }
+  };
+
+
+
+
+
+
+
+     };
+     (si necesitas más espacio usa el reverso de la hoja)
+
+  c) (2 pts) Hay un segundo error lógico en la segunda
+     función, independientemente del problema de sobrecarga.
+     Incluso si el compilador la aceptara, no calcula el
+     área de un rectángulo correctamente.
+     ¿Cuál es ese error? ¿Qué debería retornar?
+     ________________________________________________________
+     ________________________________________________________
+
+  d) (2 pts) El tipo de retorno de las dos funciones es
+     double en ambos casos. ¿Podría el compilador usar el
+     tipo de retorno para distinguirlas si fuera diferente
+     — por ejemplo una retorna double y la otra int?
+     Justifica.
+     ________________________________________________________
+     ________________________________________________________
+
+════════════════════════════════════════════════════════════════
+  PUNTO EXTRA 2 — ESTRUCTURAS DE DATOS Y BIG O     (+10 pts)
+════════════════════════════════════════════════════════════════
+
+  (mismas condiciones que PE — ver arriba)
+
+────────────────────────────────────────────────────────────────
+PE2. (+10 pts) Implementa la siguiente función:
+
+  int* encontrarRepetidos(int* arr, int n, int& cantRepetidos)
+
+  El usuario decide en tiempo de ejecución cuántos elementos
+  tendrá el arreglo (n se lee del teclado).
+  La función recibe el arreglo y su tamaño.
+  Debe encontrar todos los valores que aparecen más de una
+  vez en arr y retornar un nuevo arreglo dinámico con esos
+  valores sin duplicarlos en el resultado.
+  cantRepetidos debe quedar con la cantidad de elementos
+  del arreglo retornado.
+
+  REQUISITOS:
+  - arr se recibe por PUNTERO.
+  - cantRepetidos se pasa por REFERENCIA — la función lo
+    modifica directamente.
+  - El arreglo retornado se reserva con new[] en el heap.
+    El caller es responsable de liberarlo con delete[].
+  - Si no hay repetidos, retorna nullptr y cantRepetidos = 0.
+
+─── EJEMPLO DE EJECUCIÓN ────────────────────────────────────
+
+  Entrada:
+    8
+    3  1  4  1  5  3  2  4
+
+  Salida esperada:
+    Repetidos (3): 3 1 4
+
+─── ADEMÁS DE LA IMPLEMENTACIÓN ────────────────────────────
+
+  Responde por escrito:
+
+  ¿Cuál es la complejidad temporal de tu implementación
+  en notación Big O en función de n?
+  ________________________________________________________
+
+  ¿Por qué es esa complejidad y no otra? Explica en
+  términos de cuántas operaciones hace el algoritmo
+  en relación a n.
+  ________________________________________________________
+  ________________________________________________________
+
+  ¿Existe una forma de resolverlo con menor complejidad?
+  ¿A qué costo?
+  ________________________________________________________
+  ________________________________________________________
+
+  Escribe tu código aquí (función + main completo):
+  El main debe:
+    - Leer n del teclado
+    - Reservar el arreglo con new[]
+    - Leer n valores
+    - Llamar encontrarRepetidos()
+    - Imprimir el resultado
+    - Liberar AMBOS arreglos con delete[]
+
+
+
+
+
+
+
+
+================================================================
+FIN DEL EXAMEN
+================================================================
+
